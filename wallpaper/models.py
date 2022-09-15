@@ -39,3 +39,10 @@ class Comment(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like')
     wallpaper = models.ForeignKey(Wallpaper, on_delete=models.CASCADE, related_name='like')
+
+
+class Rating(models.Model):
+    choices = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rating')
+    wallpaper = models.ForeignKey(Wallpaper, on_delete=models.CASCADE, related_name='rating')
+    value = models.IntegerField(choices=choices)

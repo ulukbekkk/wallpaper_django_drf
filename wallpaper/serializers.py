@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Category, Wallpaper, Comment
@@ -72,4 +73,8 @@ class WallpaperSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['user'] = instance.user.email
+        rep['like'] = instance.like.all().count()
+        print(dir(instance.like.all()))
+        rep['rating'] = instance.rating.aggregate(Avg('value'))
         return rep
+
