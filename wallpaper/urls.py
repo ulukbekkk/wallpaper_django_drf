@@ -12,6 +12,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('like/<int:pk>/', LikeAPIView.as_view()),
     path('rating/<int:pk>/', RatingAPIView.as_view()),
+
     # path('products/<int:pk/comments/>', CommentViewSet.as_view()),
 
     path('test/', index),

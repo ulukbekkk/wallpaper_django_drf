@@ -1,4 +1,6 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.contrib.auth import get_user_model
+
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -9,6 +11,9 @@ from rest_framework.views import APIView
 from .serializers import CategorySerializer, WallpaperSerializer, CommentSerializer
 from .models import Category, Wallpaper, Comment, Like, Rating
 from .helpers import OwnerPermission
+from .tasks import send_all_user
+
+User = get_user_model()
 
 
 class CategoryModelViewSet(ModelViewSet):
@@ -79,4 +84,6 @@ class RatingAPIView(APIView):
 
 
 def index(request):
+    print('hello in view')
+    send_all_user.delay()
     return HttpResponse('<h1>Hello</h1>')
