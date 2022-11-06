@@ -1,5 +1,6 @@
 import os
 
+
 from celery import Celery
 from celery.schedules import crontab
 
@@ -21,9 +22,9 @@ app.autodiscover_tasks()
 
 # celery beat tasks для расписании(название таска, расположение таска, время таска)
 app.conf.beat_schedule = {
-    'send-spam-every-5-minute' :{  
+    'send-spam-every-5-minute': {
         'task': 'wallpaper.tasks.send_beat_email',
-        'schedule' : crontab(minute='*/5')
+        'schedule': crontab(minute='*/5')
     },
 }
 
