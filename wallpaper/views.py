@@ -74,7 +74,7 @@ class RatingAPIView(APIView):
 
         return Response({'msg': 'rating created'}, status=status.HTTP_201_CREATED)
 
-    def delate(self, request, pk):
+    def delete(self, request, pk):
         wallpaper = get_object_or_404(Wallpaper, id=pk)
         if Rating.objects.get(user=request.user, wallpaper=wallpaper).exists():
             Rating.objects.get(user=request.user, wallpaper=wallpaper).delate()
@@ -83,7 +83,10 @@ class RatingAPIView(APIView):
             return Response({'msg': 'You didn`t have a rating to remove it'})
 
 
-def index(request):
-    print('hello in view')
-    send_all_user.delay()
-    return HttpResponse('<h1>Hello</h1>')
+class CelerySendToEmailAPIView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def post(request):
+        print('hello in view')
+        send_all_user.delay()
+        return Response({'msg': 'send to all email'})

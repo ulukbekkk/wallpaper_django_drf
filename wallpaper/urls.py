@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import index, WallpaperModelViewSet, CategoryModelViewSet, CommentViewSet, LikeAPIView, RatingAPIView
+from .views import WallpaperModelViewSet, CategoryModelViewSet, CommentViewSet, LikeAPIView, RatingAPIView, \
+    CelerySendToEmailAPIView
 
 router = DefaultRouter()
 router.register('products', WallpaperModelViewSet)
@@ -15,5 +16,5 @@ urlpatterns = [
 
     # path('products/<int:pk/comments/>', CommentViewSet.as_view()),
 
-    path('test/', index),
+    path('celery/', CelerySendToEmailAPIView.as_view()),
  ]

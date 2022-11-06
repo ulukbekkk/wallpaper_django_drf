@@ -1,8 +1,13 @@
 from django.db import models
+from django.dispatch import receiver
+from django.urls import reverse
+from django.core.mail import send_mail
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 from decouple import config
+
+from django_rest_passwordreset.signals import reset_password_token_created
 
 
 class UserManager(BaseUserManager):
@@ -43,7 +48,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     email = models.EmailField('email address', unique=True)
     password = models.CharField(max_length=100)
-    image = models.ImageField(verbose_name='images', upload_to='user_img', default='default.png')
+    image = models.ImageField(verbose_name='images', upload_to='user_img', default='media/default.png')
     is_active = models.BooleanField('active', default=False)
     activation_code = models.CharField('activation code', max_length=36, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -69,3 +74,20 @@ class User(AbstractUser):
         activation_url = f'{config("DOMAIN")}api/v1/account/activate/{self.activation_code}/'
         message = f'Activate your account, follow this link {activation_url}'
         send_mail("Activate account", message, 'wallpaper@gmail.com', [self.email])
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
+    )
