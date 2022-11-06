@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +13,10 @@ from .serializers import CategorySerializer, WallpaperSerializer, CommentSeriali
 from .models import Category, Wallpaper, Comment, Like, Rating
 from .helpers import OwnerPermission
 from .tasks import send_all_user
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 User = get_user_model()
 
@@ -31,6 +36,35 @@ class WallpaperModelViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter("title of category", openapi.IN_QUERY, "filter wallpapers by category",
+                          type=openapi.TYPE_STRING)])
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        queryset = self.queryset
+        category = request.query_params.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+
+        """ разбиваем queryset на страницы """
+        page = self.paginate_queryset(queryset)
+        """ сериализуем """
+        serializer = self.get_serializer(page, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter("title of wallpaper", openapi.IN_QUERY, "search wallpapers by title",
+                          type=openapi.TYPE_STRING)])
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        queryset = self.get_queryset()
+        title = request.query_params.get('title')
+        if title:
+            queryset = queryset.filter(title_icontains=title)
+
+        serializer = WallpaperSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(ModelViewSet):
