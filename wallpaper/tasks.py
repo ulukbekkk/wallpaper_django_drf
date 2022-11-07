@@ -29,11 +29,12 @@ def send_all_user(text):
 
 
 # В термминале по расписанию: celery -A config beat -l info
-@app.task
-def send_beat_email():
-    for email in User.objects.all():
-        mail.send_mail("Вы подписались на рассылку",
-                        "C почты сайта будет присылать вам спам для теста",
-                        'hello@gmail.com',
-                        [email.email])
-        
+
+# @app.task
+# def send_beat_email():
+#     for email in User.objects.all():
+#         mail.send_mail("Вы подписались на рассылку",
+#                         "C почты сайта будет присылать вам спам для теста",
+#                         'hello@gmail.com',
+#                         [email.email])
+#
