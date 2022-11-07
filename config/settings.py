@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     #my apps
     'wallpaper',
     'person',
+    'my_room'
 
 
 ]

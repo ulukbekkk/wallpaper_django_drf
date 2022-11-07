@@ -48,7 +48,6 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     email = models.EmailField('email address', unique=True)
     password = models.CharField(max_length=100)
-    image = models.ImageField(verbose_name='images', upload_to='user_img', default='media/default.png')
     is_active = models.BooleanField('active', default=False)
     activation_code = models.CharField('activation code', max_length=36, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

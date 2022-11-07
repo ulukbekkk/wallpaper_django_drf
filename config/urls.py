@@ -18,8 +18,13 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+from rest_framework.routers import DefaultRouter
+
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+
+from wallpaper.views import WallpaperModelViewSet, CategoryModelViewSet, CommentViewSet
+from my_room.views import MyRoomViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -30,11 +35,16 @@ schema_view = get_schema_view(
     public=True
 )
 
-
+router = DefaultRouter()
+router.register('products', WallpaperModelViewSet)
+router.register('categories', CategoryModelViewSet)
+router.register('comments', CommentViewSet)
+router.register('my_room', MyRoomViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('docs/', schema_view.with_ui("swagger")),
+    path('api/v1/', include(router.urls)),
     path('api/v1/account/', include('person.urls')),
     path('api/v1/', include('wallpaper.urls'))
 ]
