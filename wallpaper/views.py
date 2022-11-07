@@ -8,8 +8,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 
-from .serializers import CategorySerializer, WallpaperSerializer, CommentSerializer
+from .serializers import CategorySerializer, WallpaperSerializer, CommentSerializer, CelerySerializer
 from .models import Category, Wallpaper, Comment, Like, Rating
 from .helpers import OwnerPermission
 from .tasks import send_all_user
@@ -117,10 +118,12 @@ class RatingAPIView(APIView):
             return Response({'msg': 'You didn`t have a rating to remove it'})
 
 
-class CelerySendToEmailAPIView(APIView):
-    permission_classes = (IsAdminUser,)
+class CelerySendToEmailAPIView(CreateAPIView):
+    serializer_class = CelerySerializer
+    # permission_classes = (IsAdminUser,)
 
-    def post(request):
-        print('hello in view')
-        send_all_user.delay()
-        return Response({'msg': 'send to all email'})
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            send_all_user.delay(request.data.get('text_to'))
+            return Response({'msg': 'send to all email'})

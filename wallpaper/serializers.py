@@ -78,3 +78,6 @@ class WallpaperSerializer(serializers.ModelSerializer):
         rep['rating'] = instance.rating.aggregate(Avg('value'))
         return rep
 
+
+class CelerySerializer(serializers.Serializer):
+    text_to = serializers.CharField(write_only=True, max_length=500,)
